@@ -1,0 +1,50 @@
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+}
+
+.logo-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.btn-primary {
+  background-color: #0000b3;
+  border-color: #0000b3;
+}
+
+.btn-primary:hover {
+  background-color: #000080;
+  border-color: #000080;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+}
+
+a {
+  color: #0000b3;
+}
+
+a:hover {
+  color: #000080;
+}
+
+.form-check-label {
+  cursor: pointer;
+  text-align: center;
+}
+
+.border-primary {
+  border-width: 2px !important;
+}
