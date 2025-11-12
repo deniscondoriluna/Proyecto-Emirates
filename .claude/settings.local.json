@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s /b *.pdf)",
+      "Bash(where:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(ng generate:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

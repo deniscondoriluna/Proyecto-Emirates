@@ -3,49 +3,45 @@
         <div class="logo">
             <a routerLink="/" class="logo-link">
                 <img src="assets/aeropuerto.png" alt="Logo aeropuerto" class="logo-icon">
-                <span class="logo-text">EL GRAN VIAJE</span>
+                <span class="logo-text">EMIRATES</span>
             </a>
         </div>
 
         <nav class="nav">
-            <a routerLink="/home" routerLinkActive="active" class="nav-link">Vuelos</a>
+            <a routerLink="/vuelos" routerLinkActive="active" class="nav-link">Vuelos</a>
             <a routerLink="/ayuda" routerLinkActive="active" class="nav-link">Ayuda</a>
             <a routerLink="/como-llegar" routerLinkActive="active" class="nav-link">Cómo llegar</a>
 
             <!-- Mostrar si NO está autenticado -->
-            @if (!isAuthenticated) {
+            <ng-container *ngIf="!isAuthenticated">
                 <a routerLink="/login" routerLinkActive="active" class="nav-link">
                     <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
                 </a>
                 <a routerLink="/register" routerLinkActive="active" class="nav-link btn-register">
                     Registrarse
                 </a>
-            }
+            </ng-container>
 
             <!-- Mostrar si está autenticado -->
-            @if (isAuthenticated) {
-                <div class="dropdown">
-                    <button class="btn btn-user dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle me-1"></i>
-                        <span>{{ currentUser?.name }}</span>
-                        @if (currentUser?.role === 'admin') {
-                            <span class="badge bg-danger ms-1">Admin</span>
-                        }
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                        <li><span class="dropdown-item-text"><strong>{{ currentUser?.email }}</strong></span></li>
+            <div class="dropdown" *ngIf="isAuthenticated">
+                <button class="btn btn-user dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <span>{{ currentUser?.name }}</span>
+                    <span class="badge bg-danger ms-1" *ngIf="currentUser?.role === 'admin'">Admin</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                    <li><span class="dropdown-item-text"><strong>{{ currentUser?.email }}</strong></span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" routerLink="/mi-perfil"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
+                    <li><a class="dropdown-item" routerLink="/mis-reservas"><i class="bi bi-ticket me-2"></i>Mis reservas</a></li>
+                    <ng-container *ngIf="currentUser?.role === 'admin'">
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/perfil"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
-                        <li><a class="dropdown-item" routerLink="/mis-reservas"><i class="bi bi-ticket me-2"></i>Mis reservas</a></li>
-                        @if (currentUser?.role === 'admin') {
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" routerLink="/admin"><i class="bi bi-speedometer2 me-2"></i>Panel Admin</a></li>
-                        }
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
-                    </ul>
-                </div>
-            }
+                        <li><a class="dropdown-item" routerLink="/admin"><i class="bi bi-speedometer2 me-2"></i>Panel Admin</a></li>
+                    </ng-container>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+                </ul>
+            </div>
         </nav>
     </div>
 </header>

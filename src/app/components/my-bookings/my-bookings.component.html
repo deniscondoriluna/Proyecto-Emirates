@@ -1,0 +1,262 @@
+<div class="bookings-container">
+  <div class="container py-5">
+    <!-- Header -->
+    <div class="page-header mb-4">
+      <h2 class="mb-2">
+        <i class="bi bi-ticket-perforated-fill me-2"></i>
+        Mis Reservas
+      </h2>
+      <p class="text-muted">Administra tus vuelos reservados</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="text-center py-5" *ngIf="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Cargando tus reservas...</p>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!isLoading">
+      <!-- Filtros -->
+      <div class="filters-section card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <label class="form-label mb-2">Filtrar por estado:</label>
+              <select class="form-select" [(ngModel)]="filterStatus">
+                <option value="all">Todas las reservas</option>
+                <option value="confirmed">Confirmadas</option>
+                <option value="cancelled">Canceladas</option>
+                <option value="completed">Completadas</option>
+              </select>
+            </div>
+            <div class="col-md-6 text-end mt-3 mt-md-0">
+              <div class="stats">
+                <span class="badge bg-primary me-2">
+                  <i class="bi bi-calendar-check"></i> Próximos: {{ upcomingBookings.length }}
+                </span>
+                <span class="badge bg-secondary">
+                  <i class="bi bi-clock-history"></i> Pasados: {{ pastBookings.length }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="text-center py-5" *ngIf="filteredBookings.length === 0">
+        <div class="empty-state">
+          <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+          <h4 class="mt-4">No tienes reservas</h4>
+          <p class="text-muted mb-4">Explora nuestros vuelos y realiza tu primera reserva</p>
+          <a routerLink="/vuelos" class="btn btn-primary">
+            <i class="bi bi-airplane-fill me-2"></i>Buscar vuelos
+          </a>
+        </div>
+      </div>
+
+      <!-- Bookings List -->
+      <div class="row" *ngIf="filteredBookings.length > 0">
+        <div class="col-lg-6 mb-4" *ngFor="let booking of filteredBookings">
+          <div class="booking-card card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div>
+                <span class="flight-number">{{ booking.flight.flightNumber }}</span>
+                <span [class]="'badge ms-2 ' + getStatusBadgeClass(booking.status)">
+                  {{ getStatusText(booking.status) }}
+                </span>
+              </div>
+              <button class="btn btn-sm btn-outline-primary" (click)="viewBookingDetail(booking)">
+                <i class="bi bi-eye"></i> Ver detalles
+              </button>
+            </div>
+            <div class="card-body">
+              <!-- Route Info -->
+              <div class="route-info mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="location">
+                    <i class="bi bi-geo-alt-fill text-primary"></i>
+                    <strong>{{ booking.flight.origin }}</strong>
+                  </div>
+                  <div class="route-line">
+                    <i class="bi bi-airplane"></i>
+                  </div>
+                  <div class="location text-end">
+                    <strong>{{ booking.flight.destination }}</strong>
+                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Flight Details -->
+              <div class="flight-details">
+                <div class="detail-row">
+                  <i class="bi bi-calendar3"></i>
+                  <span>{{ formatDate(booking.flight.departureDate) }}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="bi bi-clock"></i>
+                  <span>{{ booking.flight.departureTime }} - {{ booking.flight.arrivalTime }}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="bi bi-person-fill"></i>
+                  <span>{{ booking.passengers.length }} pasajero(s)</span>
+                </div>
+                <div class="detail-row">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <span>{{ getFlightClassName(booking.flightClass) }}</span>
+                </div>
+              </div>
+
+              <!-- Confirmation Code -->
+              <div class="confirmation-code mt-3 p-2 bg-light rounded">
+                <small class="text-muted">Código de confirmación:</small>
+                <strong class="d-block">{{ booking.confirmationCode }}</strong>
+              </div>
+
+              <!-- Price -->
+              <div class="price-section mt-3 pt-3 border-top">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-muted">Precio total:</span>
+                  <h5 class="mb-0 text-primary">{{ formatPrice(booking.totalPrice) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalles -->
+<div class="modal fade" [class.show]="showDetailModal" [style.display]="showDetailModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-backdrop fade" [class.show]="showDetailModal" (click)="closeDetailModal()"></div>
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="selectedBooking">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-ticket-detailed-fill me-2"></i>
+          Detalles de la Reserva
+        </h5>
+        <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Status Badge -->
+        <div class="text-center mb-4">
+          <span [class]="'badge fs-6 ' + getStatusBadgeClass(selectedBooking.status)">
+            {{ getStatusText(selectedBooking.status) }}
+          </span>
+        </div>
+
+        <!-- Confirmation Code -->
+        <div class="alert alert-info text-center">
+          <h6 class="mb-1">Código de Confirmación</h6>
+          <h3 class="mb-0 font-monospace">{{ selectedBooking.confirmationCode }}</h3>
+        </div>
+
+        <!-- Flight Information -->
+        <div class="section-detail mb-4">
+          <h6 class="border-bottom pb-2 mb-3">
+            <i class="bi bi-airplane-fill me-2"></i>Información del Vuelo
+          </h6>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Vuelo:</strong> {{ selectedBooking.flight.flightNumber }}</p>
+              <p><strong>Aeronave:</strong> {{ selectedBooking.flight.aircraft }}</p>
+              <p><strong>Duración:</strong> {{ selectedBooking.flight.duration }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Origen:</strong> {{ selectedBooking.flight.origin }}</p>
+              <p><strong>Destino:</strong> {{ selectedBooking.flight.destination }}</p>
+              <p><strong>Fecha:</strong> {{ formatDate(selectedBooking.flight.departureDate) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passengers -->
+        <div class="section-detail mb-4">
+          <h6 class="border-bottom pb-2 mb-3">
+            <i class="bi bi-people-fill me-2"></i>Pasajeros
+          </h6>
+          <div class="passenger-item p-2 mb-2 bg-light rounded" *ngFor="let passenger of selectedBooking.passengers; let i = index">
+            <div class="d-flex justify-content-between">
+              <div>
+                <strong>{{ passenger.firstName }} {{ passenger.lastName }}</strong>
+                <p class="mb-0 small text-muted">{{ passenger.documentType }}: {{ passenger.documentNumber }}</p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-secondary">Asiento: {{ selectedBooking.seatNumbers[i] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class and Amenities -->
+        <div class="section-detail mb-4">
+          <h6 class="border-bottom pb-2 mb-3">
+            <i class="bi bi-star-fill me-2"></i>Clase y Servicios
+          </h6>
+          <p><strong>Clase:</strong> {{ getFlightClassName(selectedBooking.flightClass) }}</p>
+          <p><strong>Servicios incluidos:</strong></p>
+          <ul class="list-unstyled">
+            <li *ngFor="let amenity of selectedBooking.flight.amenities">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>{{ amenity }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Extras -->
+        <div class="section-detail mb-4" *ngIf="selectedBooking.extras">
+          <h6 class="border-bottom pb-2 mb-3">
+            <i class="bi bi-plus-circle-fill me-2"></i>Extras
+          </h6>
+          <p *ngIf="selectedBooking.extras.airportTransfer">
+            <i class="bi bi-car-front-fill text-primary me-2"></i>Traslado al aeropuerto
+          </p>
+          <p *ngIf="selectedBooking.extras.extraLuggage">
+            <i class="bi bi-luggage-fill text-primary me-2"></i>Equipaje extra: {{ selectedBooking.extras.extraLuggage }} kg
+          </p>
+          <p *ngIf="selectedBooking.extras.mealPreference">
+            <i class="bi bi-egg-fried text-primary me-2"></i>Preferencia de comida: {{ selectedBooking.extras.mealPreference }}
+          </p>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="section-detail">
+          <h6 class="border-bottom pb-2 mb-3">
+            <i class="bi bi-cash-stack me-2"></i>Resumen de Pago
+          </h6>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Fecha de reserva:</span>
+            <span>{{ formatDate(selectedBooking.bookingDate) }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span>Método de pago:</span>
+            <span>{{ selectedBooking.paymentMethod || 'No especificado' }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+            <h5 class="mb-0">Total:</h5>
+            <h4 class="mb-0 text-primary">{{ formatPrice(selectedBooking.totalPrice) }}</h4>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="downloadItinerary(selectedBooking)">
+          <i class="bi bi-download me-2"></i>Descargar itinerario
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          *ngIf="canCancelBooking(selectedBooking)"
+          (click)="cancelBooking(selectedBooking.id)">
+          <i class="bi bi-x-circle me-2"></i>Cancelar reserva
+        </button>
+        <button type="button" class="btn btn-primary" (click)="closeDetailModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

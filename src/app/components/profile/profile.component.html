@@ -1,0 +1,193 @@
+<div class="profile-container" *ngIf="currentUser">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-4">
+        <!-- Tarjeta de perfil -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-body text-center">
+            <div class="profile-avatar mb-3">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <h4 class="mb-2">{{ currentUser.name }}</h4>
+            <span [class]="getRoleBadgeClass()">{{ accountType }}</span>
+            <p class="text-muted mt-3 mb-0">
+              <small>Miembro desde</small>
+            </p>
+            <p class="text-muted">
+              <strong>{{ memberSince }}</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="card-title mb-3">Estadísticas</h6>
+            <div class="stat-item">
+              <i class="bi bi-airplane-fill text-primary"></i>
+              <div class="stat-info">
+                <p class="mb-0">Reservas totales</p>
+                <h5 class="mb-0">{{ totalBookings }}</h5>
+              </div>
+            </div>
+            <hr>
+            <div class="stat-item">
+              <i class="bi bi-star-fill text-warning"></i>
+              <div class="stat-info">
+                <p class="mb-0">Puntos Emirates</p>
+                <h5 class="mb-0">{{ emiratesPoints | number }}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <!-- Información personal -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Información Personal</h5>
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="toggleEdit()"
+              *ngIf="!isEditing">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+          </div>
+          <div class="card-body">
+            <div *ngIf="!isEditing">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="text-muted">Nombre completo</label>
+                </div>
+                <div class="col-md-8">
+                  <p class="mb-0"><strong>{{ currentUser.name }}</strong></p>
+                </div>
+              </div>
+              <hr>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="text-muted">Email</label>
+                </div>
+                <div class="col-md-8">
+                  <p class="mb-0"><strong>{{ currentUser.email }}</strong></p>
+                </div>
+              </div>
+              <hr>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="text-muted">ID de usuario</label>
+                </div>
+                <div class="col-md-8">
+                  <p class="mb-0"><strong>{{ currentUser.id }}</strong></p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-md-4">
+                  <label class="text-muted">Tipo de cuenta</label>
+                </div>
+                <div class="col-md-8">
+                  <p class="mb-0"><strong>{{ accountType }}</strong></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulario de edición -->
+            <div *ngIf="isEditing">
+              <form>
+                <div class="mb-3">
+                  <label for="editName" class="form-label">Nombre completo</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="editName"
+                    [(ngModel)]="editForm.name"
+                    name="name">
+                </div>
+                <div class="mb-3">
+                  <label for="editEmail" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="editEmail"
+                    [(ngModel)]="editForm.email"
+                    name="email">
+                </div>
+                <div class="d-flex gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="saveChanges()">
+                    <i class="bi bi-check-lg"></i> Guardar cambios
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="toggleEdit()">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historial de reservas -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Reservas Recientes</h5>
+            <a routerLink="/mis-reservas" class="btn btn-sm btn-outline-primary" *ngIf="recentBookings.length > 0">
+              Ver todas <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+          <div class="card-body">
+            <!-- Sin reservas -->
+            <div class="text-center py-5 text-muted" *ngIf="recentBookings.length === 0">
+              <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+              <p class="mt-3">No tienes reservas aún</p>
+              <a routerLink="/vuelos" class="btn btn-primary">Explorar vuelos</a>
+            </div>
+
+            <!-- Lista de reservas recientes -->
+            <div *ngIf="recentBookings.length > 0">
+              <div class="booking-item mb-3 p-3 border rounded" *ngFor="let booking of recentBookings">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <h6 class="mb-1">{{ booking.flight.flightNumber }}</h6>
+                    <p class="text-muted mb-0">
+                      <i class="bi bi-geo-alt me-1"></i>
+                      {{ booking.flight.origin }} → {{ booking.flight.destination }}
+                    </p>
+                  </div>
+                  <span [class]="'badge ' + getStatusBadgeClass(booking.status)">
+                    {{ getStatusText(booking.status) }}
+                  </span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center text-muted small">
+                  <span>
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ formatDate(booking.flight.departureDate) }}
+                  </span>
+                  <span>
+                    <i class="bi bi-people me-1"></i>
+                    {{ booking.passengers.length }} pasajero(s)
+                  </span>
+                  <strong class="text-primary">{{ formatPrice(booking.totalPrice) }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mensaje si no hay usuario -->
+<div class="container py-5 text-center" *ngIf="!currentUser">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+  <p class="mt-3">Cargando perfil...</p>
+</div>
