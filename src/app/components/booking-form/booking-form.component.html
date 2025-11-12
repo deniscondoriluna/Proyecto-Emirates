@@ -1,0 +1,362 @@
+<div class="booking-form-container">
+  <!-- Loading State -->
+  <div class="container py-5 text-center" *ngIf="isLoading">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3">Cargando información del vuelo...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container py-5" *ngIf="!isLoading && flight">
+    <!-- Page Header -->
+    <div class="page-header mb-5">
+      <h2 class="text-center mb-2">
+        <i class="bi bi-ticket-perforated-fill me-2"></i>
+        Completar Reserva
+      </h2>
+      <p class="text-center text-muted">Sigue los pasos para confirmar tu vuelo</p>
+    </div>
+
+    <div class="row">
+      <!-- Left Column: Form Steps -->
+      <div class="col-lg-8">
+        <!-- Progress Stepper -->
+        <div class="stepper-container mb-4">
+          <div class="stepper">
+            <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+              <div class="step-circle">
+                <i class="bi bi-check-lg" *ngIf="currentStep > 1"></i>
+                <span *ngIf="currentStep <= 1">1</span>
+              </div>
+              <div class="step-label">Clase & Pasajeros</div>
+            </div>
+            <div class="step-line" [class.active]="currentStep >= 2"></div>
+            <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+              <div class="step-circle">
+                <i class="bi bi-check-lg" *ngIf="currentStep > 2"></i>
+                <span *ngIf="currentStep <= 2">2</span>
+              </div>
+              <div class="step-label">Información</div>
+            </div>
+            <div class="step-line" [class.active]="currentStep >= 3"></div>
+            <div class="step" [class.active]="currentStep >= 3">
+              <div class="step-circle">3</div>
+              <div class="step-label">Extras & Pago</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1: Class Selection & Passengers -->
+        <div class="step-content card shadow-sm" *ngIf="currentStep === 1">
+          <div class="card-body p-4">
+            <h4 class="mb-4">
+              <i class="bi bi-star-fill text-warning me-2"></i>
+              Selecciona la Clase de Vuelo
+            </h4>
+
+            <!-- Class Selection Cards -->
+            <div class="class-selection mb-4">
+              <div
+                class="class-card"
+                [class.selected]="selectedClass === FlightClass.ECONOMY"
+                (click)="selectedClass = FlightClass.ECONOMY">
+                <div class="class-header">
+                  <i class="bi bi-airplane"></i>
+                  <h5>Económica</h5>
+                </div>
+                <div class="class-price">{{ formatPrice(getClassPrice(FlightClass.ECONOMY)) }}</div>
+                <ul class="class-features">
+                  <li><i class="bi bi-check"></i> Asiento estándar</li>
+                  <li><i class="bi bi-check"></i> Equipaje de mano</li>
+                  <li><i class="bi bi-check"></i> Snacks y bebidas</li>
+                </ul>
+              </div>
+
+              <div
+                class="class-card"
+                [class.selected]="selectedClass === FlightClass.BUSINESS"
+                (click)="selectedClass = FlightClass.BUSINESS">
+                <div class="class-header">
+                  <i class="bi bi-briefcase-fill"></i>
+                  <h5>Business</h5>
+                </div>
+                <div class="class-price">{{ formatPrice(getClassPrice(FlightClass.BUSINESS)) }}</div>
+                <ul class="class-features">
+                  <li><i class="bi bi-check"></i> Asiento reclinable</li>
+                  <li><i class="bi bi-check"></i> Equipaje adicional</li>
+                  <li><i class="bi bi-check"></i> Comida gourmet</li>
+                  <li><i class="bi bi-check"></i> Acceso a lounge</li>
+                </ul>
+              </div>
+
+              <div
+                class="class-card"
+                [class.selected]="selectedClass === FlightClass.FIRST_CLASS"
+                (click)="selectedClass = FlightClass.FIRST_CLASS">
+                <div class="class-header">
+                  <i class="bi bi-gem"></i>
+                  <h5>Primera Clase</h5>
+                </div>
+                <div class="class-price">{{ formatPrice(getClassPrice(FlightClass.FIRST_CLASS)) }}</div>
+                <ul class="class-features">
+                  <li><i class="bi bi-check"></i> Suite privada</li>
+                  <li><i class="bi bi-check"></i> Servicio premium</li>
+                  <li><i class="bi bi-check"></i> Menú exclusivo</li>
+                  <li><i class="bi bi-check"></i> Máxima comodidad</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Number of Passengers -->
+            <div class="mb-4">
+              <label class="form-label">
+                <i class="bi bi-people-fill me-2"></i>
+                Número de Pasajeros
+              </label>
+              <select
+                class="form-select"
+                [(ngModel)]="numberOfPassengers"
+                (change)="onNumberOfPassengersChange()">
+                <option [value]="1">1 Pasajero</option>
+                <option [value]="2">2 Pasajeros</option>
+                <option [value]="3">3 Pasajeros</option>
+                <option [value]="4">4 Pasajeros</option>
+                <option [value]="5">5 Pasajeros</option>
+              </select>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-primary btn-lg" (click)="nextStep()">
+                Continuar <i class="bi bi-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Passenger Information -->
+        <div class="step-content card shadow-sm" *ngIf="currentStep === 2">
+          <div class="card-body p-4">
+            <h4 class="mb-4">
+              <i class="bi bi-person-vcard-fill me-2"></i>
+              Información de Pasajeros
+            </h4>
+
+            <!-- Passenger Forms -->
+            <div class="passenger-form mb-4" *ngFor="let passenger of passengers; let i = index">
+              <h6 class="passenger-number mb-3">Pasajero {{ i + 1 }}</h6>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="passenger.firstName"
+                    placeholder="Nombre">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Apellido</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="passenger.lastName"
+                    placeholder="Apellido">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Tipo de Documento</label>
+                  <select class="form-select" [(ngModel)]="passenger.documentType">
+                    <option value="Pasaporte">Pasaporte</option>
+                    <option value="DNI">DNI</option>
+                    <option value="Cédula">Cédula</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Número de Documento</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="passenger.documentNumber"
+                    placeholder="Número">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [ngModel]="passenger.dateOfBirth | date:'yyyy-MM-dd'"
+                    (ngModelChange)="passenger.dateOfBirth = $event">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Nacionalidad</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="passenger.nationality"
+                    placeholder="Nacionalidad">
+                </div>
+              </div>
+
+              <hr *ngIf="i < passengers.length - 1" class="my-4">
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between gap-2">
+              <button class="btn btn-outline-secondary btn-lg" (click)="previousStep()">
+                <i class="bi bi-arrow-left me-2"></i> Atrás
+              </button>
+              <button class="btn btn-primary btn-lg" (click)="nextStep()">
+                Continuar <i class="bi bi-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Extras & Confirmation -->
+        <div class="step-content card shadow-sm" *ngIf="currentStep === 3">
+          <div class="card-body p-4">
+            <h4 class="mb-4">
+              <i class="bi bi-plus-circle-fill me-2"></i>
+              Servicios Adicionales
+            </h4>
+
+            <!-- Extras Options -->
+            <div class="extras-section mb-4">
+              <div class="form-check mb-3">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="airportTransfer"
+                  [(ngModel)]="extras.airportTransfer">
+                <label class="form-check-label" for="airportTransfer">
+                  <strong>Traslado al aeropuerto</strong>
+                  <span class="text-muted d-block">$50 por persona</span>
+                </label>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Equipaje Extra (kg)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  min="0"
+                  max="50"
+                  [(ngModel)]="extras.extraLuggage"
+                  placeholder="0 kg">
+                <small class="text-muted">$10 por kg adicional</small>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Preferencia de Comida</label>
+                <select class="form-select" [(ngModel)]="extras.mealPreference">
+                  <option value="">Sin preferencia</option>
+                  <option value="vegetariano">Vegetariano</option>
+                  <option value="vegano">Vegano</option>
+                  <option value="sin gluten">Sin gluten</option>
+                  <option value="kosher">Kosher</option>
+                  <option value="halal">Halal</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Asistencia Especial</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  [(ngModel)]="extras.specialAssistance"
+                  placeholder="Describe cualquier necesidad especial..."></textarea>
+              </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between gap-2">
+              <button class="btn btn-outline-secondary btn-lg" (click)="previousStep()">
+                <i class="bi bi-arrow-left me-2"></i> Atrás
+              </button>
+              <button
+                class="btn btn-success btn-lg"
+                (click)="submitBooking()"
+                [disabled]="isSubmitting">
+                <span *ngIf="!isSubmitting">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  Confirmar Reserva
+                </span>
+                <span *ngIf="isSubmitting">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Procesando...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Summary -->
+      <div class="col-lg-4">
+        <div class="summary-card card shadow-sm sticky-top">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-receipt me-2"></i>
+              Resumen de Reserva
+            </h5>
+          </div>
+          <div class="card-body">
+            <!-- Flight Info -->
+            <div class="summary-section mb-3">
+              <h6 class="text-muted mb-2">Vuelo</h6>
+              <p class="mb-1"><strong>{{ flight.flightNumber }}</strong></p>
+              <p class="mb-1">{{ flight.origin }} → {{ flight.destination }}</p>
+              <p class="mb-1">{{ formatDate(flight.departureDate) }}</p>
+              <p class="mb-0">{{ flight.departureTime }} - {{ flight.arrivalTime }}</p>
+            </div>
+
+            <hr>
+
+            <!-- Class & Passengers -->
+            <div class="summary-section mb-3">
+              <h6 class="text-muted mb-2">Detalles</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Clase:</span>
+                <strong>{{ getFlightClassName(selectedClass) }}</strong>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Pasajeros:</span>
+                <strong>{{ numberOfPassengers }}</strong>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Price Breakdown -->
+            <div class="summary-section">
+              <h6 class="text-muted mb-2">Precio</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Vuelo (x{{ numberOfPassengers }})</span>
+                <span>{{ formatPrice(getClassPrice(selectedClass) * numberOfPassengers) }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2" *ngIf="extras.airportTransfer">
+                <span>Traslado (x{{ numberOfPassengers }})</span>
+                <span>{{ formatPrice(50 * numberOfPassengers) }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2" *ngIf="extras.extraLuggage > 0">
+                <span>Equipaje ({{ extras.extraLuggage }}kg)</span>
+                <span>{{ formatPrice(extras.extraLuggage * 10) }}</span>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Total -->
+            <div class="total-section">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Total:</h5>
+                <h4 class="mb-0 text-primary">{{ formatPrice(calculateTotalPrice()) }}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

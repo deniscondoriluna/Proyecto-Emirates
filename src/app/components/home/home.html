@@ -1,1 +1,191 @@
-<p>home works!</p>
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="container">
+        <h1 class="hero-title" data-aos="fade-up">
+          Vuela con Emirates
+        </h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="100">
+          Experiencia premium, destinos increíbles, servicio excepcional
+        </p>
+        <div class="hero-buttons" data-aos="fade-up" data-aos-delay="200">
+          <button class="btn btn-primary btn-lg me-3" (click)="navigateToBooking()">
+            <i class="bi bi-search me-2"></i>Buscar Vuelos
+          </button>
+          <button class="btn btn-outline-light btn-lg" routerLink="/mis-reservas" *ngIf="isAuthenticated">
+            <i class="bi bi-ticket-perforated me-2"></i>Mis Reservas
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <i class="bi bi-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- Featured Flights Section -->
+  <section class="featured-flights-section py-5">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">
+          <i class="bi bi-airplane-fill me-2"></i>
+          Vuelos Destacados
+        </h2>
+        <p class="section-subtitle">Descubre nuestros mejores destinos</p>
+      </div>
+
+      <!-- Loading State -->
+      <div class="text-center py-5" *ngIf="isLoading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <!-- Flights Grid -->
+      <div class="row" *ngIf="!isLoading">
+        <div class="col-lg-4 col-md-6 mb-4" *ngFor="let flight of featuredFlights">
+          <div class="flight-card card h-100">
+            <div class="card-body">
+              <div class="flight-header mb-3">
+                <span class="flight-number">{{ flight.flightNumber }}</span>
+                <span class="badge bg-success">Disponible</span>
+              </div>
+
+              <div class="flight-route mb-3">
+                <div class="route-item">
+                  <i class="bi bi-geo-alt-fill text-primary"></i>
+                  <div>
+                    <strong>{{ flight.origin }}</strong>
+                    <small class="d-block text-muted">{{ flight.departureTime }}</small>
+                  </div>
+                </div>
+                <div class="route-arrow">
+                  <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="route-item text-end">
+                  <div>
+                    <strong>{{ flight.destination }}</strong>
+                    <small class="d-block text-muted">{{ flight.arrivalTime }}</small>
+                  </div>
+                  <i class="bi bi-geo-alt-fill text-danger"></i>
+                </div>
+              </div>
+
+              <div class="flight-info mb-3">
+                <div class="info-item">
+                  <i class="bi bi-calendar3"></i>
+                  <span>{{ formatDate(flight.departureDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <i class="bi bi-clock"></i>
+                  <span>{{ flight.duration }}</span>
+                </div>
+                <div class="info-item">
+                  <i class="bi bi-airplane"></i>
+                  <span>{{ flight.aircraft }}</span>
+                </div>
+              </div>
+
+              <div class="flight-amenities mb-3">
+                <span class="amenity-badge" *ngFor="let amenity of flight.amenities.slice(0, 2)">
+                  <i class="bi bi-check-circle-fill"></i> {{ amenity }}
+                </span>
+              </div>
+
+              <div class="flight-price-section">
+                <div class="price-info">
+                  <small class="text-muted">Desde</small>
+                  <h4 class="price mb-0">{{ formatPrice(flight.pricing.economy) }}</h4>
+                </div>
+                <button class="btn btn-primary" (click)="navigateToBooking(flight)">
+                  Reservar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button class="btn btn-outline-primary btn-lg" (click)="navigateToBooking()">
+          Ver todos los vuelos <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Destinations Section -->
+  <section class="destinations-section py-5 bg-light">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">
+          <i class="bi bi-globe-americas me-2"></i>
+          Destinos Populares
+        </h2>
+        <p class="section-subtitle">Los lugares más visitados por nuestros viajeros</p>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4" *ngFor="let destination of popularDestinations">
+          <div class="destination-card">
+            <div class="destination-image" [style.background-image]="'url(' + destination.image + ')'">
+              <div class="destination-overlay">
+                <button class="btn btn-light btn-sm" (click)="navigateToBooking()">
+                  Explorar
+                </button>
+              </div>
+            </div>
+            <div class="destination-info">
+              <h5>{{ destination.city }}</h5>
+              <p class="text-muted mb-2">{{ destination.country }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="price-tag">Desde {{ formatPrice(destination.priceFrom) }}</span>
+                <i class="bi bi-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services-section py-5">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">
+          <i class="bi bi-stars me-2"></i>
+          Por qué elegir Emirates
+        </h2>
+        <p class="section-subtitle">Servicios premium que marcan la diferencia</p>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4" *ngFor="let service of services">
+          <div class="service-card text-center">
+            <div class="service-icon">
+              <i [class]="'bi ' + service.icon"></i>
+            </div>
+            <h5>{{ service.title }}</h5>
+            <p class="text-muted">{{ service.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section py-5">
+    <div class="container">
+      <div class="cta-content text-center">
+        <h2 class="mb-3">¿Listo para tu próxima aventura?</h2>
+        <p class="mb-4">Reserva ahora y disfruta de la experiencia Emirates</p>
+        <button class="btn btn-light btn-lg" (click)="navigateToBooking()">
+          <i class="bi bi-airplane-fill me-2"></i>Comenzar a buscar
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

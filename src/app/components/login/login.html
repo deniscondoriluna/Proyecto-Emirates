@@ -11,13 +11,11 @@
             </div>
 
             <!-- Mensaje de error -->
-            @if (errorMessage) {
-              <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                {{ errorMessage }}
-                <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
-              </div>
-            }
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+            </div>
 
             <!-- Formulario de login -->
             <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
@@ -37,16 +35,10 @@
                     placeholder="usuario@example.com"
                     [class.is-invalid]="emailInput.invalid && emailInput.touched"
                   >
-                  @if (emailInput.invalid && emailInput.touched) {
-                    <div class="invalid-feedback">
-                      @if (emailInput.errors?.['required']) {
-                        El email es requerido
-                      }
-                      @if (emailInput.errors?.['email']) {
-                        Ingresa un email válido
-                      }
-                    </div>
-                  }
+                  <div class="invalid-feedback" *ngIf="emailInput.invalid && emailInput.touched">
+                    <div *ngIf="emailInput.errors?.['required']">El email es requerido</div>
+                    <div *ngIf="emailInput.errors?.['email']">Ingresa un email válido</div>
+                  </div>
                 </div>
               </div>
 
@@ -73,16 +65,10 @@
                   >
                     <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                   </button>
-                  @if (passwordInput.invalid && passwordInput.touched) {
-                    <div class="invalid-feedback">
-                      @if (passwordInput.errors?.['required']) {
-                        La contraseña es requerida
-                      }
-                      @if (passwordInput.errors?.['minlength']) {
-                        La contraseña debe tener al menos 6 caracteres
-                      }
-                    </div>
-                  }
+                  <div class="invalid-feedback" *ngIf="passwordInput.invalid && passwordInput.touched">
+                    <div *ngIf="passwordInput.errors?.['required']">La contraseña es requerida</div>
+                    <div *ngIf="passwordInput.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
+                  </div>
                 </div>
               </div>
 
@@ -92,12 +78,9 @@
                   class="btn btn-primary btn-lg"
                   [disabled]="loginForm.invalid || isLoading"
                 >
-                  @if (isLoading) {
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                    Iniciando sesión...
-                  } @else {
-                    Iniciar Sesión
-                  }
+                  <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+                  <span *ngIf="isLoading">Iniciando sesión...</span>
+                  <span *ngIf="!isLoading">Iniciar Sesión</span>
                 </button>
               </div>
             </form>

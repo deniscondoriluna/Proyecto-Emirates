@@ -1,0 +1,263 @@
+.flights-container {
+  min-height: 80vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.page-header h1 {
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+/* Search Section */
+.search-section {
+  border: none;
+  border-radius: 15px;
+  background: white;
+}
+
+.search-section .card-title {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.search-section .form-control {
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-section .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Flight Result Card */
+.flight-result-card {
+  border: none;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.flight-result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+.flight-number-badge {
+  display: inline-block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #667eea;
+  letter-spacing: 1px;
+  padding: 0.25rem 0.75rem;
+  background: #f0f4ff;
+  border-radius: 8px;
+}
+
+.aircraft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Flight Route Display */
+.flight-route-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.route-point {
+  flex: 0 0 auto;
+}
+
+.route-time {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.route-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.route-connection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0 2rem;
+}
+
+.route-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right, #0d6efd, #dc3545);
+}
+
+.route-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #667eea;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Flight Details Row */
+.flight-details-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.detail-item i {
+  color: #667eea;
+}
+
+/* Amenities */
+.amenities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.amenity-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.amenity-tag i {
+  font-size: 0.75rem;
+}
+
+/* Pricing Section */
+.pricing-section {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.price-class {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.class-label {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.class-price {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.pricing-section .btn-primary {
+  padding: 0.875rem;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.pricing-section .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Results Summary */
+.results-summary {
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .flight-route-display {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .route-connection {
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  .route-line {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, #0d6efd, #dc3545);
+  }
+
+  .route-point.text-end {
+    text-align: left !important;
+  }
+
+  .pricing-section {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .flight-route-display {
+    padding: 1rem;
+  }
+
+  .route-time {
+    font-size: 1.2rem;
+  }
+
+  .route-location {
+    font-size: 0.9rem;
+  }
+
+  .pricing-section {
+    padding: 1rem;
+  }
+
+  .price-class {
+    padding: 0.5rem;
+  }
+}

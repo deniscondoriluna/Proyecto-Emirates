@@ -7,22 +7,20 @@
             <div class="text-center mb-4">
               <img src="assets/aeropuerto.png" alt="Emirates Logo" class="logo-image mb-3">
               <h2 class="card-title">Crear Cuenta</h2>
-              <p class="text-muted">Emirates - Gestión de Viajes</p>
+              <p class="text-muted">Emirates</p>
             </div>
 
             <!-- Mensaje de error -->
-            @if (errorMessage) {
-              <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                {{ errorMessage }}
-                <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
-              </div>
-            }
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+            </div>
 
             <!-- Formulario de registro -->
             <form #registerForm="ngForm" (ngSubmit)="onSubmit()">
               <div class="mb-3">
-                <label for="name" class="form-label">Nombre completo</label>
+                <label for="name" class="form-label">Nombre</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-person"></i></span>
                   <input
@@ -34,19 +32,13 @@
                     #nameInput="ngModel"
                     required
                     minlength="3"
-                    placeholder="Juan Pérez"
+                    placeholder="Hector Ossandón"
                     [class.is-invalid]="nameInput.invalid && nameInput.touched"
                   >
-                  @if (nameInput.invalid && nameInput.touched) {
-                    <div class="invalid-feedback">
-                      @if (nameInput.errors?.['required']) {
-                        El nombre es requerido
-                      }
-                      @if (nameInput.errors?.['minlength']) {
-                        El nombre debe tener al menos 3 caracteres
-                      }
-                    </div>
-                  }
+                  <div class="invalid-feedback" *ngIf="nameInput.invalid && nameInput.touched">
+                    <div *ngIf="nameInput.errors?.['required']">El nombre es requerido</div>
+                    <div *ngIf="nameInput.errors?.['minlength']">El nombre debe tener al menos 3 caracteres</div>
+                  </div>
                 </div>
               </div>
 
@@ -63,19 +55,13 @@
                     #emailInput="ngModel"
                     required
                     email
-                    placeholder="usuario@example.com"
+                    placeholder="aracena@example.com"
                     [class.is-invalid]="emailInput.invalid && emailInput.touched"
                   >
-                  @if (emailInput.invalid && emailInput.touched) {
-                    <div class="invalid-feedback">
-                      @if (emailInput.errors?.['required']) {
-                        El email es requerido
-                      }
-                      @if (emailInput.errors?.['email']) {
-                        Ingresa un email válido
-                      }
-                    </div>
-                  }
+                  <div class="invalid-feedback" *ngIf="emailInput.invalid && emailInput.touched">
+                    <div *ngIf="emailInput.errors?.['required']">El email es requerido</div>
+                    <div *ngIf="emailInput.errors?.['email']">Ingresa un email válido</div>
+                  </div>
                 </div>
               </div>
 
@@ -102,16 +88,10 @@
                   >
                     <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                   </button>
-                  @if (passwordInput.invalid && passwordInput.touched) {
-                    <div class="invalid-feedback">
-                      @if (passwordInput.errors?.['required']) {
-                        La contraseña es requerida
-                      }
-                      @if (passwordInput.errors?.['minlength']) {
-                        La contraseña debe tener al menos 6 caracteres
-                      }
-                    </div>
-                  }
+                  <div class="invalid-feedback" *ngIf="passwordInput.invalid && passwordInput.touched">
+                    <div *ngIf="passwordInput.errors?.['required']">La contraseña es requerida</div>
+                    <div *ngIf="passwordInput.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
+                  </div>
                 </div>
               </div>
 
@@ -137,11 +117,9 @@
                   >
                     <i [class]="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                   </button>
-                  @if (confirmPasswordInput.touched && confirmPassword !== registerData.password) {
-                    <div class="invalid-feedback">
-                      Las contraseñas no coinciden
-                    </div>
-                  }
+                  <div class="invalid-feedback" *ngIf="confirmPasswordInput.touched && confirmPassword !== registerData.password">
+                    Las contraseñas no coinciden
+                  </div>
                 </div>
               </div>
 
@@ -195,12 +173,9 @@
                   class="btn btn-primary btn-lg"
                   [disabled]="registerForm.invalid || confirmPassword !== registerData.password || isLoading"
                 >
-                  @if (isLoading) {
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                    Creando cuenta...
-                  } @else {
-                    Crear Cuenta
-                  }
+                  <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+                  <span *ngIf="isLoading">Creando cuenta...</span>
+                  <span *ngIf="!isLoading">Crear Cuenta</span>
                 </button>
               </div>
             </form>
@@ -208,7 +183,7 @@
             <hr>
 
             <div class="text-center">
-              <p class="mb-0">¿Ya tienes cuenta? <a routerLink="/login" class="text-decoration-none">Inicia sesión aquí</a></p>
+              <p class="mb-0">¿Ya tienes cuenta? <a routerLink="/login" class="text-decoration-none">Iniciar sesión</a></p>
             </div>
           </div>
         </div>
